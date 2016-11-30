@@ -55,7 +55,19 @@ var MediaPlayer = (function () {
             mute: this.mute,
             shuffle: this.shuffle
         };
+        /**
+         * Playlist height
+         *
+         * @type {number}
+         * @private
+         */
         this._playlistLength = 0;
+        this._styleDisableFullScreenControls = '::-webkit-media-controls { display:none !important;}';
+        /**
+         * @type {boolean}
+         * @private
+         */
+        this._fullscreenEnable = false;
         try {
             if (!target.length) {
                 console.error('Can\'t find target');
@@ -212,6 +224,12 @@ var MediaPlayer = (function () {
         }
         else if (this._player.webkitSupportsFullscreen) {
             this._player.webkitSupportsFullscreen();
+        }
+        if (!this._styleElement) {
+            this._styleElement = document.createElement('style');
+            this._styleElement.setAttribute('id', 'media-player-style');
+            this._styleElement.innerHTML = this._styleDisableFullScreenControls;
+            document.body.appendChild(this._styleElement);
         }
     };
     /**

@@ -18,7 +18,6 @@ interface MediaStyle
     background?: number|string
 }
 
-
 interface MediaControls
 {
     play?: string|Element,
@@ -112,7 +111,28 @@ class MediaPlayer {
      */
     private _player: HTMLMediaElement;
 
+    /**
+     * Playlist height
+     *
+     * @type {number}
+     * @private
+     */
     private _playlistLength: number = 0;
+
+
+    /**
+     *  Style element
+     */
+    private _styleElement : Element;
+
+
+    private _styleDisableFullScreenControls: string = '::-webkit-media-controls { display:none !important;}';
+
+    /**
+     * @type {boolean}
+     * @private
+     */
+    private _fullscreenEnable = false;
 
     /**
      * Media player constructor
@@ -351,6 +371,18 @@ class MediaPlayer {
         } else  if(this._player.webkitSupportsFullscreen) {
             this._player.webkitSupportsFullscreen();
         }
+
+
+        if (!this._styleElement)
+        {
+            this._styleElement = document.createElement('style');
+            this._styleElement.setAttribute('id', 'media-player-style');
+            this._styleElement.innerHTML = this._styleDisableFullScreenControls;
+
+            document.body.appendChild(this._styleElement);
+
+        }
+
     }
 
 
