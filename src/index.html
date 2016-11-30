@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script type="text/javascript" src="./build/mediaPlayer.js"></script>
+
+</head>
+<body>
+
+<script type="text/javascript">
+
+    document.addEventListener("DOMContentLoaded", function ()
+    {
+        mediaPlayer = new MediaPlayer('#video',
+                {
+
+                    playlist: [
+                        'http://tvbooking.ru/video/TVBooking.mp4',
+                        'https://adbooking.ru/video/adbooking.mp4',
+                        'http://www.w3schools.com/html/mov_bbb.mp4'
+                    ],
+
+
+                    style: {
+                        width:  '500px',
+                        height: '500px',
+                    },
+
+                    controls: {
+                        play: '.play',
+                        pause: '.stop',
+                        next: '.next',
+                        prev: '.prev',
+                        fullscreen: '.fullscreen',
+                        mute: '.mute'
+                    },
+
+                    // repeat: false,
+                    volume: 0
+                });
+    });
+</script>
+
+
+<video id="video"></video>
+
+<div>
+    <span class="play">Играть</span>
+    <span class="stop">Остановить</span>
+    <span class="next">Следующий</span>
+    <span class="prev">Предыдущий</span>
+    <span class="fullscreen">На весь экран</span>
+    <span class="mute">Выключить звук</span>
+</div>
+
+
+</body>
+</html>

@@ -1,0 +1,22 @@
+{
+  "name": "mediaplayer",
+  "description": "HTML5 Medial player with playlists and custom controls",
+  "main": "gulpfile.js",
+  "authors": [
+    "Evgeny Merkushev <byMerk@live.ru>"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "js",
+    "media",
+    "player"
+  ],
+  "homepage": "http://byMerk.com/projects/mediaPlayer/",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
