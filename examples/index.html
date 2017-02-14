@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Title</title>
 
-    <script type="text/javascript" src="../src/build/mediaPlayer.js"></script>
+    <script type="text/javascript" src="../build/mediaPlayer.js"></script>
 
 </head>
 <body>
@@ -18,8 +18,10 @@
 
                     playlist: [
                         'http://tvbooking.ru/video/TVBooking.mp4',
+                        '../media/b039c2afeeda74118f77942b2ea6332a.jpg',
+                        '../media/data-0.mp3',
                         'https://adbooking.ru/video/adbooking.mp4',
-                        'http://www.w3schools.com/html/mov_bbb.mp4'
+                        'http://www.w3schools.com/html/mov_bbb.mp4',
                     ],
 
 
@@ -37,14 +39,15 @@
                         mute: '.mute'
                     },
 
+
                     // repeat: false,
-                    volume: 0
+//                    volume: 0
                 });
     });
 </script>
 
 
-<video id="video"></video>
+<div id="video"></div>
 
 <div>
     <span class="play">Играть</span>

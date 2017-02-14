@@ -12,24 +12,24 @@ var gulp    = require('gulp'),
 
 gulp.task("default", function () {
 
-    gulp.watch('src/typescript/*.ts', ['build']);
+    gulp.watch('src/*.ts', ['build']);
 });
 
 
 gulp.task('build', function () {
 
-    return gulp.src('src/typescript/*.ts')
+    return gulp.src('src/*.ts')
         .pipe(ts())
         .pipe(concat('mediaPlayer.js'))
-        .pipe(gulp.dest('src/build/'));
+        .pipe(gulp.dest('build/'));
 
 });
 
 gulp.task('minify', function () {
 
-    return gulp.src('src/build/*.js')
+    return gulp.src('build/*.js')
         .pipe(uglify())
         .pipe(concat('mediaPlayer.min.js'))
-        .pipe(gulp.dest('src/build/min/'));
+        .pipe(gulp.dest('build/min/'));
 
 });
