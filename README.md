@@ -6,7 +6,7 @@ Plugin for extend HTML5 video/audio/image player.
 Example:
 
     <div id="media-player"></div>
-
+    
         mediaPlayer = new MediaPlayer('#media-player',
                 {
 
@@ -40,3 +40,4 @@ Example:
 
                 });
     });
+   

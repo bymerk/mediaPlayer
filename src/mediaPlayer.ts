@@ -319,7 +319,6 @@ class MediaPlayer {
             return;
         }
 
-        this._playbackState.mediaType = this._getMediaType(url);
 
         if (!this._playbackState.mediaType)
         {
@@ -488,17 +487,20 @@ class MediaPlayer {
      */
     private _getMediaUrl(position: number) : string {
 
+
         if (typeof this._options.playlist[position] == 'string')
         {
+            let url =  this._options.playlist[position];
+            this._playbackState.mediaType = this._getMediaType(url);
             return this._options.playlist[position];
         }
         else if (typeof this._options.playlist[position] == 'object')
         {
             let itemInfo = this._options.playlist[position];
 
-            this._playbackState.mediaType = itemInfo['type'];
-            this._playbackState.imageDuration = itemInfo['duration'];
-            return itemInfo['url'];
+            this._playbackState.mediaType = itemInfo.type;
+            this._playbackState.imageDuration = itemInfo.duration;
+            return itemInfo.url;
         }
 
         if (!this._options.repeat) {
