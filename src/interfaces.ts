@@ -28,6 +28,7 @@ export interface Player {
     element?:       Element | HTMLMediaElement,
     length?:        number,
     volume?:        number,
+    stopped?:       Event,
 
     play():         void,
     pause():        void,
@@ -79,6 +80,7 @@ export interface MediaPlayerOptions extends Object
     /**
      * playback
      */
+    poster?: string,
     autoPlay?: boolean,
     startFrom?: number,
     repeat?: boolean,

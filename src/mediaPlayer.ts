@@ -40,6 +40,8 @@ class MediaPlayer {
      */
     private _styleElement : Element;
 
+    private _playerElementStyle : string = '';
+
     /**
      * Style for disable default browser controls in fullscreen mode
      *
@@ -49,10 +51,12 @@ class MediaPlayer {
     private _styleDisableFullScreenControls: string = '::-webkit-media-controls { display:none !important;}';
 
     /**
+     * Fullscreen flag
+     *
      * @type {boolean}
      * @private
      */
-    private _fullscreenEnable = false;
+    private _fullScreenEnable = false;
 
     /**
      * Default Options
@@ -65,7 +69,7 @@ class MediaPlayer {
             autoPlay: true,
             showDefaultControls: false,
             imagePlayDuration: 25,
-            repeat: true,
+            repeat: false,
             volume: 0.75,
             volumeStep: 0.05,
             shuffle: false,
@@ -132,7 +136,7 @@ class MediaPlayer {
      */
     constructor(target: string, options?: MediaPlayerOptions)
     {
-        // try {
+        try {
 
             if (!target.length) {
                 console.error('Can\'t get target');
@@ -178,11 +182,21 @@ class MediaPlayer {
             {
                 this._player.play();
             }
+            else if (this._options.poster)
+            {
+                this._play(this._options.poster);
+            }
+
+            this._player.stopped = new Event('mediaPlayer.stopped');
+
+            document.addEventListener('mediaPlayer.stopped', function () {
+                alert('as');
+            });
 
 
-        // } catch (err) {
-        //     console.warn(err);
-        // }
+        } catch (err) {
+            console.warn(err);
+        }
     }
 
 
@@ -383,6 +397,7 @@ class MediaPlayer {
         this._options.startFrom = 0;
         this._player.play();
         this._player.pause();
+        document.dispatchEvent(this._player.stopped);
     }
 
 
@@ -436,6 +451,8 @@ class MediaPlayer {
      */
     public fullScreen() : void
     {
+        let _this = this;
+
         if (this._player.element.requestFullscreen)
         {
             this._player.element.requestFullscreen();
@@ -455,8 +472,27 @@ class MediaPlayer {
             this._styleElement.innerHTML = this._styleDisableFullScreenControls;
 
             this._player.element.appendChild(this._styleElement);
-
         }
+
+        let cb = function()
+        {
+            _this._fullScreenEnable = !_this._fullScreenEnable
+
+            if (_this._fullScreenEnable)
+            {
+                _this._playerElementStyle = _this._player.element.getAttribute('style');
+                _this._player.element.setAttribute('style', '')
+            } else  {
+                _this._player.element.setAttribute('style', _this._playerElementStyle)
+            }
+
+        };
+
+        document.addEventListener("webkitfullscreenchange", cb);
+        document.addEventListener("mozfullscreenchange", cb);
+
+
+
 
     }
 
@@ -505,6 +541,7 @@ class MediaPlayer {
 
         if (!this._options.repeat) {
             this.pause();
+            document.dispatchEvent(this._player.stopped);
             return;
         }
 

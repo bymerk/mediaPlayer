@@ -15,7 +15,6 @@ var MediaPlayer = (function () {
      * @param options
      */
     function MediaPlayer(target, options) {
-        // try {
         /**
          * Player allowed media types
          *
@@ -34,6 +33,7 @@ var MediaPlayer = (function () {
          * @private
          */
         this._mediaItemClass = 'media-player-item';
+        this._playerElementStyle = '';
         /**
          * Style for disable default browser controls in fullscreen mode
          *
@@ -42,10 +42,12 @@ var MediaPlayer = (function () {
          */
         this._styleDisableFullScreenControls = '::-webkit-media-controls { display:none !important;}';
         /**
+         * Fullscreen flag
+         *
          * @type {boolean}
          * @private
          */
-        this._fullscreenEnable = false;
+        this._fullScreenEnable = false;
         /**
          * Default Options
          *
@@ -56,7 +58,7 @@ var MediaPlayer = (function () {
             autoPlay: true,
             showDefaultControls: false,
             imagePlayDuration: 25,
-            repeat: true,
+            repeat: false,
             volume: 0.75,
             volumeStep: 0.05,
             shuffle: false,
@@ -105,36 +107,45 @@ var MediaPlayer = (function () {
             paused: false,
             imageDuration: 25
         };
-        if (!target.length) {
-            console.error('Can\'t get target');
-            return;
+        try {
+            if (!target.length) {
+                console.error('Can\'t get target');
+                return;
+            }
+            console.log('target', target);
+            this._player.element = document.querySelector(target);
+            if (!this._player.element) {
+                console.error('Can\'t find player');
+                return;
+            }
+            if (typeof options == 'object' && options) {
+                this._options = Object.assign(this._options, options);
+            }
+            console.log('options:', this._options);
+            this._player.length = this._options.playlist.length;
+            this._player.volume = this._options.volume;
+            if (this._player.length == 0) {
+                console.error('Empty playlist');
+                return;
+            }
+            this._init();
+            if (this._options.shuffle) {
+                this.shuffle();
+            }
+            if (this._options.autoPlay) {
+                this._player.play();
+            }
+            else if (this._options.poster) {
+                this._play(this._options.poster);
+            }
+            this._player.stopped = new Event('mediaPlayer.stopped');
+            document.addEventListener('mediaPlayer.stopped', function () {
+                alert('as');
+            });
         }
-        console.log('target', target);
-        this._player.element = document.querySelector(target);
-        if (!this._player.element) {
-            console.error('Can\'t find player');
-            return;
+        catch (err) {
+            console.warn(err);
         }
-        if (typeof options == 'object' && options) {
-            this._options = Object.assign(this._options, options);
-        }
-        console.log('options:', this._options);
-        this._player.length = this._options.playlist.length;
-        this._player.volume = this._options.volume;
-        if (this._player.length == 0) {
-            console.error('Empty playlist');
-            return;
-        }
-        this._init();
-        if (this._options.shuffle) {
-            this.shuffle();
-        }
-        if (this._options.autoPlay) {
-            this._player.play();
-        }
-        // } catch (err) {
-        //     console.warn(err);
-        // }
     }
     /**
      * Initialize player
@@ -269,6 +280,7 @@ var MediaPlayer = (function () {
         this._options.startFrom = 0;
         this._player.play();
         this._player.pause();
+        document.dispatchEvent(this._player.stopped);
     };
     /**
      * Change video/audio element sound volume
@@ -308,6 +320,7 @@ var MediaPlayer = (function () {
      *
      */
     MediaPlayer.prototype.fullScreen = function () {
+        var _this = this;
         if (this._player.element.requestFullscreen) {
             this._player.element.requestFullscreen();
         }
@@ -326,6 +339,18 @@ var MediaPlayer = (function () {
             this._styleElement.innerHTML = this._styleDisableFullScreenControls;
             this._player.element.appendChild(this._styleElement);
         }
+        var cb = function () {
+            _this._fullScreenEnable = !_this._fullScreenEnable;
+            if (_this._fullScreenEnable) {
+                _this._playerElementStyle = _this._player.element.getAttribute('style');
+                _this._player.element.setAttribute('style', '');
+            }
+            else {
+                _this._player.element.setAttribute('style', _this._playerElementStyle);
+            }
+        };
+        document.addEventListener("webkitfullscreenchange", cb);
+        document.addEventListener("mozfullscreenchange", cb);
     };
     /**
      * Shuffle playlist
@@ -362,6 +387,7 @@ var MediaPlayer = (function () {
         }
         if (!this._options.repeat) {
             this.pause();
+            document.dispatchEvent(this._player.stopped);
             return;
         }
         if (this._options.startFrom != 0) {
