@@ -13,26 +13,31 @@ export interface PlayerElements {
 }
 
 export interface PlaybackState {
-    mediaType?: string
-    imageTimeout?: number
+    imageDuration: number
+    paused:        boolean
+    mediaType?:     string
+    imageTimeout?:  number
+    timeDiff?:      number
+    startTime?:     number,
+    pausedTime?:    number
 }
 
 
 export interface Player {
 
-    element?:  Element | HTMLMediaElement,
-    length?: number,
-    volume?: number,
+    element?:       Element | HTMLMediaElement,
+    length?:        number,
+    volume?:        number,
 
-    play(): void,
-    pause(): void,
-    next(): void,
-    prev(): void,
-    fullScreen(): void,
-    volumeUp(): void,
-    volumeDown(): void,
-    mute(): void,
-    shuffle(): void,
+    play():         void,
+    pause():        void,
+    next():         void,
+    prev():         void,
+    fullScreen():   void,
+    volumeUp():     void,
+    volumeDown():   void,
+    mute():         void,
+    shuffle():      void,
 
 }
 
@@ -46,26 +51,26 @@ export interface MediaTypes {
 
 export interface MediaStyle
 {
-    width?: number|string,
-    height?: number|string
-    background?: number|string
+    width?:         number|string,
+    height?:        number|string
+    background?:    number|string
 }
 
 export interface MediaControls
 {
-    play?: string|Element,
-    pause?: string|Element,
+    play?:          string,
+    pause?:         string,
+    stop?:          string,
+    next?:          string,
+    prev?:          string,
 
-    next?: string|Element,
-    prev?: string|Element,
+    volumeUp?:      string,
+    volumeDown?:    string,
+    mute?:          string,
 
-    volumeUp?: string|Element,
-    volumeDown?: string|Element,
-    mute?: string|Element,
+    fullScreen?:    string,
 
-    fullscreen?: string|Element,
-
-    shuffle?: string|Element,
+    shuffle?:       string,
 
 }
 

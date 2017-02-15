@@ -1,22 +1,42 @@
 #Media Player
 
-Plugin for extend HTML5 video/~~audio~~ player.
+Plugin for extend HTML5 video/audio/image player.
+
 
 Example:
 
-	var  mediaPlayer = new MediaPlayer('#video',
+    <div id="media-player"></div>
+
+        mediaPlayer = new MediaPlayer('#media-player',
                 {
 
                     playlist: [
-                        'http://www.w3schools.com/html/mov_bbb.mp4'
+                        'some_video.mp4',
+                        {
+                            url:    'someimage.jpg',
+                            type: 'image',
+                            duration: 5,
+                        },
+                        'some_image_2.jpg', // default duration
+                        'some_audio.mp3',
+                        'http://www.w3schools.com/html/mov_bbb.mp4',
                     ],
 
-                    controls: {
-                        play: '.play',
-                        pause: '.stop',
-                        next: '.next',
-                        prev: '.prev',
-                        fullscreen: '.fullscreen',
-                        mute: '.mute'
+
+                    // javascript element.style
+                    style: {
+                        width:  '500px',
                     },
-	})
+                    
+                    // custom controls
+                    controls: {
+                        play:   '.play',
+                        pause:  '.stop',
+                        next:   '.next',
+                        prev:   '.prev',
+                        fullScreen: '.fullscreen',
+                        mute:   '.mute'
+                    },
+
+                });
+    });

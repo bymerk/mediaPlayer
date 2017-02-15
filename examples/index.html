@@ -18,8 +18,12 @@
 
                     playlist: [
                         'http://tvbooking.ru/video/TVBooking.mp4',
-                        '../media/b039c2afeeda74118f77942b2ea6332a.jpg',
-                        '../media/data-0.mp3',
+                        {
+                            url:    '../media/b039c2afeeda74118f77942b2ea6332a.jpg',
+                            type: 'image',
+                            duration: 5,
+                        },
+                        '../media/2fbdd09b1b72be.mp3',
                         'https://adbooking.ru/video/adbooking.mp4',
                         'http://www.w3schools.com/html/mov_bbb.mp4',
                     ],
@@ -27,7 +31,7 @@
 
                     style: {
                         width:  '500px',
-                        height: '500px',
+//                        height: '500px',
                     },
 
                     controls: {
@@ -35,13 +39,10 @@
                         pause: '.stop',
                         next: '.next',
                         prev: '.prev',
-                        fullscreen: '.fullscreen',
+                        fullScreen: '.fullscreen',
                         mute: '.mute'
                     },
 
-
-                    // repeat: false,
-//                    volume: 0
                 });
     });
 </script>

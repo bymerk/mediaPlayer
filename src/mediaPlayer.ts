@@ -4,10 +4,12 @@
 
 
 
-import {MediaPlayerOptions} from "interfaces"
 import {MediaTypes} from "interfaces"
-import {PlayerElements} from "interfaces"
+import {MediaPlayerOptions} from "interfaces"
+
+
 import {Player} from "interfaces"
+import {PlayerElements} from "interfaces"
 import {PlaybackState} from "interfaces"
 
 class MediaPlayer {
@@ -77,22 +79,32 @@ class MediaPlayer {
 
         };
 
+
     /**
-     * Player
+     * Player methods
+     *
+     * @type {{play: any; pause: any; next: any; prev: any; stop: any; fullScreen: any; volumeUp: any; volumeDown: any; mute: any; shuffle: any}}
+     * @private
+     */
+    private _controlMethods = {
+        play:       this.play.bind(this),
+        pause:      this.pause.bind(this),
+        next:       this.next.bind(this),
+        prev:       this.prev.bind(this),
+        stop:       this.stop.bind(this),
+        fullScreen: this.fullScreen.bind(this),
+        volumeUp:   this.volumeUp.bind(this),
+        volumeDown: this.volumeDown.bind(this),
+        mute:       this.mute.bind(this),
+        shuffle:    this.shuffle.bind(this)
+    };
+
+    /**
+     * Player Object
      *
      */
-    private _player: Player = {
-        play:   this.play.bind(this),
-        pause:  this.pause.bind(this),
-        next:   this.next.bind(this),
-        prev:   this.prev.bind(this),
-        stop:   this.stop.bind(this),
-        fullScreen: this.fullScreen.bind(this),
-        volumeUp: this.volumeUp.bind(this),
-        volumeDown: this.volumeDown.bind(this),
-        mute: this.mute.bind(this),
-        shuffle: this.shuffle.bind(this)
-    };
+    private _player: Player = this._controlMethods;
+
 
     /**
      * Player element from playback
@@ -101,8 +113,15 @@ class MediaPlayer {
     private _elements: PlayerElements = {};
 
 
+    /**
+     * Player states collection
+     *
+     * @type {{}}
+     * @private
+     */
     private _playbackState : PlaybackState = {
-
+        paused: false,
+        imageDuration: 25
     };
 
     /**
@@ -191,9 +210,49 @@ class MediaPlayer {
         for (let elem in this._elements)
         {
             this._elements[elem].style.display = "none";
+            this._elements[elem].style.maxWidth = "100%";
+            this._elements[elem].style.maxHeight = "100%";
             this._elements[elem].className = this._mediaItemClass;
             this._player.element.appendChild(this._elements[elem])
         }
+
+
+        if (this._options.controls)
+        {
+            let target;
+
+            for (let i in this._options.controls) {
+
+                if (this._controlMethods[i]) {
+
+                    target = document.querySelectorAll(this._options.controls[i].toString());
+                    let _length = target.length;
+                    if (_length) {
+
+                        for (let j = 0; j < _length; j++) {
+
+                            target[j]['control'] = this._controlMethods[i];
+
+                            target[j].addEventListener('click', function () {
+                                this.control.call(_this);
+                            });
+                        }
+                    }
+                }
+            }
+        }
+
+
+        if (this._options.style)
+        {
+            for (let type in this._options.style)
+            {
+                this._player.element.style[type] =  this._options.style[type]
+            }
+        }
+
+        this._playbackState.imageDuration = this._options.imagePlayDuration;
+
 
     }
 
@@ -205,6 +264,7 @@ class MediaPlayer {
     {
         this.pause();
         this._options.startFrom++;
+        this._playbackState.paused = false;
         this._player.play()
     }
 
@@ -216,6 +276,7 @@ class MediaPlayer {
     {
         this.pause();
         this._options.startFrom -= 1;
+        this._playbackState.paused = false;
         this._player.play()
     }
 
@@ -234,6 +295,8 @@ class MediaPlayer {
             clearTimeout(this._playbackState.imageTimeout)
         }
 
+        this._playbackState.paused = true;
+
     }
 
     /**
@@ -242,6 +305,12 @@ class MediaPlayer {
      */
     public play() : void
     {
+
+        if (this._playbackState.paused)
+        {
+            this._play();
+            return;
+        }
 
         let url  = this._getMediaUrl(this._options.startFrom);
 
@@ -266,11 +335,30 @@ class MediaPlayer {
 
         url = url.toString();
 
+        this._play(url)
+
+
+    }
+
+
+    /**
+     * play event
+     *
+     * @param url
+     * @private
+     */
+    private _play(url?: string) : void
+    {
         if (this._isActiveMedia())
         {
 
-            this._elements[this._playbackState.mediaType].src = url.toString();
-            this._elements[this._playbackState.mediaType].load();
+            if (!this._playbackState.paused)
+            {
+                this._elements[this._playbackState.mediaType].src = url;
+                this._elements[this._playbackState.mediaType].load();
+            }
+
+            this._elements[this._playbackState.mediaType].volume = this._player.volume;
             this._elements[this._playbackState.mediaType].play();
         }
         else {
@@ -278,10 +366,11 @@ class MediaPlayer {
             let _this = this;
             this._elements.image.style.display = '';
             this._elements.image.src = url;
-            this._playbackState.imageTimeout = setTimeout(() => _this._player.next(), this._options.imagePlayDuration * 1000)
+            this._playbackState.imageTimeout =
+                setTimeout(() => _this._player.next(), this._playbackState.imageDuration * 1000)
+
+            this._playbackState.imageDuration = this._options.imagePlayDuration;
         }
-
-
     }
 
 
@@ -291,6 +380,7 @@ class MediaPlayer {
      */
     public stop() : void
     {
+        this._playbackState.paused = false;
         this._options.startFrom = 0;
         this._player.play();
         this._player.pause();
@@ -398,8 +488,17 @@ class MediaPlayer {
      */
     private _getMediaUrl(position: number) : string {
 
-        if (typeof this._options.playlist[position] == 'string') {
+        if (typeof this._options.playlist[position] == 'string')
+        {
             return this._options.playlist[position];
+        }
+        else if (typeof this._options.playlist[position] == 'object')
+        {
+            let itemInfo = this._options.playlist[position];
+
+            this._playbackState.mediaType = itemInfo['type'];
+            this._playbackState.imageDuration = itemInfo['duration'];
+            return itemInfo['url'];
         }
 
         if (!this._options.repeat) {
@@ -449,7 +548,8 @@ class MediaPlayer {
     }
 
 
-        /**
+
+    /**
      * Getting media player options
      *
      * @returns {MediaPlayerOptions}

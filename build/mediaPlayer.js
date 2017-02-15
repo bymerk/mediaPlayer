@@ -68,10 +68,12 @@ var MediaPlayer = (function () {
             }
         };
         /**
-         * Player
+         * Player methods
          *
+         * @type {{play: any; pause: any; next: any; prev: any; stop: any; fullScreen: any; volumeUp: any; volumeDown: any; mute: any; shuffle: any}}
+         * @private
          */
-        this._player = {
+        this._controlMethods = {
             play: this.play.bind(this),
             pause: this.pause.bind(this),
             next: this.next.bind(this),
@@ -84,11 +86,25 @@ var MediaPlayer = (function () {
             shuffle: this.shuffle.bind(this)
         };
         /**
+         * Player Object
+         *
+         */
+        this._player = this._controlMethods;
+        /**
          * Player element from playback
          *
          */
         this._elements = {};
-        this._playbackState = {};
+        /**
+         * Player states collection
+         *
+         * @type {{}}
+         * @private
+         */
+        this._playbackState = {
+            paused: false,
+            imageDuration: 25
+        };
         if (!target.length) {
             console.error('Can\'t get target');
             return;
@@ -135,9 +151,34 @@ var MediaPlayer = (function () {
         this._elements.image.addEventListener('ended', function () { return _this._player.next(); });
         for (var elem in this._elements) {
             this._elements[elem].style.display = "none";
+            this._elements[elem].style.maxWidth = "100%";
+            this._elements[elem].style.maxHeight = "100%";
             this._elements[elem].className = this._mediaItemClass;
             this._player.element.appendChild(this._elements[elem]);
         }
+        if (this._options.controls) {
+            var target = void 0;
+            for (var i in this._options.controls) {
+                if (this._controlMethods[i]) {
+                    target = document.querySelectorAll(this._options.controls[i].toString());
+                    var _length = target.length;
+                    if (_length) {
+                        for (var j = 0; j < _length; j++) {
+                            target[j]['control'] = this._controlMethods[i];
+                            target[j].addEventListener('click', function () {
+                                this.control.call(_this);
+                            });
+                        }
+                    }
+                }
+            }
+        }
+        if (this._options.style) {
+            for (var type in this._options.style) {
+                this._player.element.style[type] = this._options.style[type];
+            }
+        }
+        this._playbackState.imageDuration = this._options.imagePlayDuration;
     };
     /**
      * Play next media item
@@ -146,6 +187,7 @@ var MediaPlayer = (function () {
     MediaPlayer.prototype.next = function () {
         this.pause();
         this._options.startFrom++;
+        this._playbackState.paused = false;
         this._player.play();
     };
     /**
@@ -155,6 +197,7 @@ var MediaPlayer = (function () {
     MediaPlayer.prototype.prev = function () {
         this.pause();
         this._options.startFrom -= 1;
+        this._playbackState.paused = false;
         this._player.play();
     };
     /**
@@ -168,12 +211,17 @@ var MediaPlayer = (function () {
         else if (this._playbackState.imageTimeout) {
             clearTimeout(this._playbackState.imageTimeout);
         }
+        this._playbackState.paused = true;
     };
     /**
      * Start playing media
      *
      */
     MediaPlayer.prototype.play = function () {
+        if (this._playbackState.paused) {
+            this._play();
+            return;
+        }
         var url = this._getMediaUrl(this._options.startFrom);
         if (!url) {
             return;
@@ -187,16 +235,30 @@ var MediaPlayer = (function () {
         }
         this._elements[this._playbackState.mediaType].style.display = '';
         url = url.toString();
+        this._play(url);
+    };
+    /**
+     * play event
+     *
+     * @param url
+     * @private
+     */
+    MediaPlayer.prototype._play = function (url) {
         if (this._isActiveMedia()) {
-            this._elements[this._playbackState.mediaType].src = url.toString();
-            this._elements[this._playbackState.mediaType].load();
+            if (!this._playbackState.paused) {
+                this._elements[this._playbackState.mediaType].src = url;
+                this._elements[this._playbackState.mediaType].load();
+            }
+            this._elements[this._playbackState.mediaType].volume = this._player.volume;
             this._elements[this._playbackState.mediaType].play();
         }
         else {
             var _this_1 = this;
             this._elements.image.style.display = '';
             this._elements.image.src = url;
-            this._playbackState.imageTimeout = setTimeout(function () { return _this_1._player.next(); }, this._options.imagePlayDuration * 1000);
+            this._playbackState.imageTimeout =
+                setTimeout(function () { return _this_1._player.next(); }, this._playbackState.imageDuration * 1000);
+            this._playbackState.imageDuration = this._options.imagePlayDuration;
         }
     };
     /**
@@ -204,6 +266,7 @@ var MediaPlayer = (function () {
      *
      */
     MediaPlayer.prototype.stop = function () {
+        this._playbackState.paused = false;
         this._options.startFrom = 0;
         this._player.play();
         this._player.pause();
@@ -290,6 +353,12 @@ var MediaPlayer = (function () {
         if (typeof this._options.playlist[position] == 'string') {
             return this._options.playlist[position];
         }
+        else if (typeof this._options.playlist[position] == 'object') {
+            var itemInfo = this._options.playlist[position];
+            this._playbackState.mediaType = itemInfo['type'];
+            this._playbackState.imageDuration = itemInfo['duration'];
+            return itemInfo['url'];
+        }
         if (!this._options.repeat) {
             this.pause();
             return;
@@ -323,10 +392,10 @@ var MediaPlayer = (function () {
         return this._playbackState.mediaType == 'video' || this._playbackState.mediaType == 'audio';
     };
     /**
- * Getting media player options
- *
- * @returns {MediaPlayerOptions}
- */
+     * Getting media player options
+     *
+     * @returns {MediaPlayerOptions}
+     */
     MediaPlayer.prototype.getOptions = function () {
         return this._options;
     };
