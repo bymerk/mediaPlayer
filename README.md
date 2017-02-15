@@ -1,7 +1,8 @@
 #Media Player
 
-Plugin for extend HTML5 video/audio/image player.
-
+Smart HTML5 media player, can works with **video**, **audio** and **image**.
+Unlike the default HTML5 media player it can play media from **playlist**.
+Just specify in options which media files should be played in the order.
 
 Example:
 
@@ -41,3 +42,15 @@ Example:
                 });
     });
    
+
+
+
+----------
+
+#Media Player - RU
+
+Умный HTML5 медила плеер, работает с **видео**, **аудио** и **изображением**. В отличие от стандартного HTML5 плеера может воспроизводить **плейлисты**.
+
+Просто укажите в настройках файлы, который вы хотите воспроизвести.
+
+Пример смотрите выше.
