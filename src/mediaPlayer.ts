@@ -3,6 +3,12 @@
  */
 
 
+/**
+ * @todo started, paused events
+ * @todo preload?
+ * @todo poster without fired events
+ */
+
 
 import {MediaTypes} from "interfaces"
 import {MediaPlayerOptions} from "interfaces"
