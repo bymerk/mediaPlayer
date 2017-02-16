@@ -139,9 +139,6 @@ var MediaPlayer = (function () {
                 this._play(this._options.poster);
             }
             this._player.stopped = new Event('mediaPlayer.stopped');
-            document.addEventListener('mediaPlayer.stopped', function () {
-                alert('as');
-            });
         }
         catch (err) {
             console.warn(err);
