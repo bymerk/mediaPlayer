@@ -170,7 +170,6 @@ class MediaPlayer {
                 return;
             }
 
-
             this._init();
 
             if (this._options.shuffle)
