@@ -189,10 +189,6 @@ class MediaPlayer {
 
             this._player.stopped = new Event('mediaPlayer.stopped');
 
-            document.addEventListener('mediaPlayer.stopped', function () {
-                alert('as');
-            });
-
 
         } catch (err) {
             console.warn(err);
