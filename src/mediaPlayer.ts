@@ -367,9 +367,9 @@ class MediaPlayer {
     private _play(url?: string) : void
     {
 
-        if (this._isIos && this._player.webkitExitFullScreen)
+        if (this._isIos && this._elements.video.webkitExitFullScreen)
         {
-            this._player.element.webkitExitFullScreen();
+            this._elements.video.webkitExitFullScreen();
         }
 
 

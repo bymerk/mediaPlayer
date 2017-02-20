@@ -252,8 +252,8 @@ var MediaPlayer = (function () {
      * @private
      */
     MediaPlayer.prototype._play = function (url) {
-        if (this._isIos && this._player.webkitExitFullScreen) {
-            this._player.element.webkitExitFullScreen();
+        if (this._isIos && this._elements.video.webkitExitFullScreen) {
+            this._elements.video.webkitExitFullScreen();
         }
         if (this._isActiveMedia()) {
             if (!this._playbackState.paused) {
