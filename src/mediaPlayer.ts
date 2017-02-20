@@ -7,6 +7,7 @@
  * @todo started, paused events
  * @todo preload?
  * @todo poster without fired events
+ * @todo fullScreen fix add document width and height
  */
 
 
@@ -63,6 +64,8 @@ class MediaPlayer {
      * @private
      */
     private _fullScreenEnable = false;
+
+    private _isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
     /**
      * Default Options
@@ -363,6 +366,13 @@ class MediaPlayer {
      */
     private _play(url?: string) : void
     {
+
+        if (this._isIos && this._player.webkitExitFullScreen)
+        {
+            this._player.element.webkitExitFullScreen();
+        }
+
+
         if (this._isActiveMedia())
         {
 

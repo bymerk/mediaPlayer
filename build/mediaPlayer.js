@@ -48,6 +48,7 @@ var MediaPlayer = (function () {
          * @private
          */
         this._fullScreenEnable = false;
+        this._isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
         /**
          * Default Options
          *
@@ -251,6 +252,9 @@ var MediaPlayer = (function () {
      * @private
      */
     MediaPlayer.prototype._play = function (url) {
+        if (this._isIos && this._player.webkitExitFullScreen) {
+            this._player.element.webkitExitFullScreen();
+        }
         if (this._isActiveMedia()) {
             if (!this._playbackState.paused) {
                 this._elements[this._playbackState.mediaType].src = url;
